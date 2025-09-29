@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tiempo</title>
+    <link rel="icon" type="image/x-icon" href="imagenes/icono_tiempo.png">
+    <link rel="stylesheet" href="estilos.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+    <!-- MOVILES -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#2196f3">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Tiempo">
+
+    <!-- Para iOS -->
+    <link rel="apple-touch-icon" href="imagenes/icono_tiempo.png">
+
+    <!-- Para Android -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- SERVICE WORKER SCRIPT -->
+    <script>
+    // Detectar cuando la app puede ser instalada
+    let deferredPrompt;
+    const installButton = document.createElement('button');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+    // Prevenir que el navegador muestre el prompt automáticamente
+    e.preventDefault();
+    deferredPrompt = e;
+    
+    // Mostrar botón de instalación (opcional)
+    console.log('App puede ser instalada');
+    
+    // Opcional: Mostrar un botón de instalación
+    installButton.textContent = '📱 Instalar App';
+    installButton.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        padding: 10px 15px;
+        background: #2196f3;
+        color: white;
+        border: none;
+        border-radius: 20px;
+        cursor: pointer;
+        z-index: 1000;
+        font-size: 14px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    `;
+    document.body.appendChild(installButton);
+    
+    installButton.addEventListener('click', () => {
+        installButton.style.display = 'none';
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then(choiceResult => {
+        if (choiceResult.outcome === 'accepted') {
+            console.log('Usuario aceptó instalar la app');
+        }
+        deferredPrompt = null;
+        });
+    });
+    });
+
+    // Registrar Service Worker
+    if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+        .then(registration => {
+            console.log('Service Worker registrado');
+        })
+        .catch(error => {
+            console.log('Error al registrar Service Worker:', error);
+        });
+    });
+    }
+    </script>
+</head>
+<body>
+    <div class="cabecera">
+        <!--<i class="material-icons">cloud</i>-->
+        <h1 id="titulo-tiempo"><img src="imagenes/icono_tiempo.png" id="img-tiempo" alt="img-tiempo">Tiempo</h1>
+    </div>
+
+    <hr class="linea">
+
+    <div class="menu">
+        <!--<i class="material-icons" style="color: white;">settings</i>-->
+        <!--<input type="image" id="input-configuracion" src="imagenes/configuracion.png">-->
+        <input type="search" id="input-buscador" placeholder="País / ciudad" pattern="[A-Za-z]" maxlength="85">
+        <img src="imagenes/lupa.png" id="img-lupa" alt="img-lupa">
+    </div>
+
+    <div class="contenido">
+        <table id="tabla1">
+            <tr>
+                <th><h2 id="ciudad">Ciudad</h2></th>
+                <td rowspan="2" style="width: 20px;"></td>
+                <td rowspan="2">
+                    <div class="horarios">
+                        <p id="hora">Hora</p>
+                        <p id="amanecer">Amanecer</p>
+                        <p id="anochecer">Anochecer</p>
+                    </div>
+                </td>
+            </tr>
+            <tr id="celda-estado">
+                <td><p id="estado" style="margin-top: -30px;">Estado</p></td>
+            </tr>
+        </table>
+    </div>
+    <div>
+        <hr class="linea2">
+    </div>
+    <div class="contenido2">
+        <table id="tabla-tiempo">
+            <tr>
+                <td><img src="imagenes/icono_tiempo.png" id="icono" alt="icono"></td>
+                <th><p id="temperatura">Temperatura</p></th>
+                <td colspan="2"width=50px></td>
+                <td><p id="viento">Viento</p></td>
+            </tr>
+        </table>
+    </div>
+    <div>
+        <hr class="linea2">
+    </div>
+    <div class="rangos">
+        <input type="button" id="input-horas" value="Horas">
+        <input type="button" id="input-dias" value="Dias">
+    </div>
+
+    <div class="panel">
+        <div class="panel-scroll" id="panel-scroll">
+            <p>No hay datos</p>
+        </div>
+    </div>
+    <script src="API.js"></script>
+</body>
+</html>
